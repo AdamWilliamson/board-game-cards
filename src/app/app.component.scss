@@ -1,0 +1,34 @@
+.theme-list-item {
+  background-color: lightblue;
+}
+.playercount-list-item {
+  background-color: lightcoral;
+}
+.gametype-list-item {
+  background-color: lightgrey;
+}
+.type-list-item {
+  background-color: lightyellow;
+}
+.playtime-list-item{
+  background-color: lightgreen;
+}
+.title-size {
+  font-size: 40pt;
+  padding-right: 10px;
+  line-height: 65px;
+}
+.second-title-size{
+  font-size: 35pt;
+  padding-right: 10px;
+  line-height: 65px;
+}
+
+.list-item {
+  &.mat-list-item {
+    height: 75px;
+    &.n2-line{
+      height: 150px;
+    }
+  }
+}
