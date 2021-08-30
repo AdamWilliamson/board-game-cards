@@ -23,18 +23,18 @@ interface GameItem extends BGGThingResult {
 })
 export class AppComponent {
   title = 'board-game-cards';
-  username = 'Mythical_Man84';
   gameCollection: Array<GameItem> = [];
   @ViewChild('cards') cardContainer: ElementRef<HTMLElement> | null = null;
   images: Array<HTMLImageElement> = [];
   imageUrls: Array<string> = [];
   imageLoadedCount = 0;
-  loading = false;
+  loading = true;
   themes: Array<string> = [];
   mechanics: Array<string> = [];
   complexities = ['Very Low', 'Low', 'Moderate', 'High', 'Very High'];
   types = ['VS', 'Cooperative', 'Interactive', 'Solitaire'].sort();
   editing = false;
+  username = '';
 
   get pageWidth() {
     return '2480px';
@@ -52,7 +52,7 @@ export class AppComponent {
   }
 
   get imageMaxHeight() {
-    return Math.floor(Number.parseInt(this.cardHeight) / 2.5) + 'px';
+    return Math.floor(Number.parseInt(this.cardHeight) / 2.3) + 'px';
   }
 
   readonly padding = 60;
@@ -62,14 +62,11 @@ export class AppComponent {
 
   get titleModifiers() {
     return {
-      high: true
+      high: true,
     };
   }
 
-  constructor(
-    private http: HttpClient,
-    private bggService: BggGameServiceService
-  ) {
+  constructor(private bggService: BggGameServiceService) {
     let collectionJson = localStorage.getItem('collection');
     if (collectionJson) {
       this.gameCollection = JSON.parse(collectionJson);
@@ -77,7 +74,7 @@ export class AppComponent {
         if (!game.themes) game.themes = [];
         if (!game.complexity) game.complexity = 'Moderate';
         if (!game.themes) game.themes = [];
-        if (!game.type) game.type = "";
+        if (!game.type) game.type = '';
         if (!game.mechanics) game.mechanics = [];
       });
     }
@@ -136,34 +133,41 @@ export class AppComponent {
         'Trading',
       ].sort();
     }
+    this.loading = false;
   }
 
   public loadCollection() {
-    this.bggService
-      .getUsersGames(this.username)
-      .subscribe((data: Array<BGGThingResult>) => {
-
+    this.loading = true;
+    console.log(this.username);
+    this.bggService.getUsersGames(this.username).subscribe(
+      (data: Array<BGGThingResult>) => {
         let tempData = <GameItem[]>data;
-        for(let game of tempData){
-          let result = this.gameCollection.find(f => this.getCardTitle(f) == this.getCardTitle(game));
-          if (result){
+        for (let game of tempData) {
+          let result = this.gameCollection.find(
+            (f) => this.getCardTitle(f) == this.getCardTitle(game)
+          );
+          if (result) {
             game.themes = result.themes;
             game.complexity = result.complexity;
             game.type = result.type;
-            game.mechanics = result.mechanics
-          } else{
+            game.mechanics = result.mechanics;
+          } else {
             game.themes = [];
             game.complexity = 'Moderate';
             game.themes = [];
-            game.type = "";
+            game.type = '';
           }
         }
-        
+
         this.gameCollection = tempData;
-        console.log(tempData);
-        
+
         localStorage.setItem('collection', JSON.stringify(tempData));
-      });
+        this.loading = false;
+      },
+      (err) => {
+        this.loading = false;
+      }
+    );
   }
 
   getCardTitle(item: BGGThingResult) {
@@ -190,10 +194,17 @@ export class AppComponent {
     this.imageLoadedCount++;
   }
 
-  editSave(){
-    if (this.editing){
+  editSave() {
+    if (this.editing) {
       localStorage.setItem('collection', JSON.stringify(this.gameCollection));
     }
     this.editing = !this.editing;
+  }
+
+  clearCache() {
+    this.loading = true;
+    localStorage.setItem('collection', '[]');
+    this.gameCollection = [];
+    this.loading = false;
   }
 }

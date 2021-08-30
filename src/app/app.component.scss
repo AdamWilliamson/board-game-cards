@@ -4,13 +4,21 @@
 .playercount-list-item {
   background-color: lightcoral;
 }
-.gametype-list-item {
+.mechanics-list-item {
   background-color: lightgrey;
+  .list-item {
+    &.mat-list-item {
+      height: 25px;
+      &.n2-line {
+        height: 130px;
+      }
+    }
+  }
 }
 .type-list-item {
   background-color: lightyellow;
 }
-.playtime-list-item{
+.playtime-list-item {
   background-color: lightgreen;
 }
 .title-size {
@@ -18,7 +26,7 @@
   padding-right: 10px;
   line-height: 65px;
 }
-.second-title-size{
+.second-title-size {
   font-size: 35pt;
   padding-right: 10px;
   line-height: 65px;
@@ -27,8 +35,8 @@
 .list-item {
   &.mat-list-item {
     height: 75px;
-    &.n2-line{
-      height: 150px;
+    &.n2-line {
+      height: 117px;
     }
   }
 }

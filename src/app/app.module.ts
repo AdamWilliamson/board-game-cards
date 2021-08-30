@@ -17,8 +17,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatListModule } from '@angular/material/list';
 import { MatChipsModule } from '@angular/material/chips/';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [AppComponent],
@@ -38,6 +39,8 @@ import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
     MatChipsModule,
     MatAutocompleteModule,
     MatIconModule,
+    FormsModule,
+    MatProgressBarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

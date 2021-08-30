@@ -1,13 +1,46 @@
-<mat-card>
+<mat-card fxFlex fxFlexAlign="start" fxLayout="column">
+  <mat-card-header>
+    <mat-card-title>BGG Collection Card Creator</mat-card-title>
+  </mat-card-header>
   <mat-card-content fxFlex fxFlexAlign="start" fxLayout="column">
+    <p>
+      Enter your BGG Username, click "Load Collection". <br />
+      It will download your entire game collection, minus expansions.<br />
+      It will then allow you to edit your collection, adding the ability to
+      choose Theme, Mechanics and Type, for each card. <br />
+      If you then click Save, it will save the collection to your local storage.
+      Clicking load again, will add any games you add to your collection.<br />
+      Clicking Clear Cache, will empty your local storage, so a new "Load
+      Collection", will start again from scratch.<br />
+      I Recommend using a "Full page screenshot" plugin to download all your
+      cards. And then cut them up for printing.
+    </p>
     <mat-card-actions>
+      <mat-form-field appearance="fill">
+        <mat-label>BGG Username</mat-label>
+        <input matInput placeholder="Username" [(ngModel)]="username" />
+      </mat-form-field>
       <button mat-raised-button color="primary" (click)="loadCollection()">
         Load Collection
       </button>
-      <button mat-raised-button color="primary" (click)="editSave()">
-        {{ (editing)?"Save":"Edit"}} Collection
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="editSave()"
+        *ngIf="gameCollection && gameCollection.length > 0"
+      >
+        {{ editing ? "Save" : "Edit" }} Collection
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="clearCache()"
+        *ngIf="gameCollection && gameCollection.length > 0"
+      >
+        Clear Cache
       </button>
     </mat-card-actions>
+    <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
     <div
       fxLayout="row wrap"
       #cards
@@ -16,7 +49,7 @@
         height: pageHeight,
         'margin-left': '70px'
       }"
-      *ngIf="gameCollection && gameCollection.length > 0"
+      *ngIf="!loading && gameCollection && gameCollection.length > 0"
     >
       <mat-card
         *ngFor="let item of gameCollection; let i = index"
@@ -27,7 +60,8 @@
           'box-sizing': 'border-box',
           padding: '0px',
           'margin-right': '2px',
-          'margin-bottom':(((i+1) / 3) % 3 == 0)?'120px':'1px'
+          'margin-bottom': ((i + 1) / 3) % 3 == 0 ? '120px' : '1px',
+          overflow: 'hidden'
         }"
       >
         <mat-card-content style="">
@@ -56,8 +90,8 @@
               />
             </div>
 
-            <mat-list>
-              <mat-list-item class="list-item theme-list-item" >
+            <mat-list style="padding-top: 0px; margin-top: 0px">
+              <mat-list-item class="list-item theme-list-item">
                 <span class="title-size" [ngClass]="titleModifiers">
                   Theme:
                 </span>
@@ -68,7 +102,7 @@
                 >
                   {{ item.themes?.join(", ") }}
                 </span>
-                <div *ngIf="editing"  style="width:100%">
+                <div *ngIf="editing" style="width: 100%">
                   <ng-container
                     *ngTemplateOutlet="
                       autocomplete;
@@ -87,38 +121,61 @@
                   Play Time: {{ item.playingtime.attr.value }} Minutes
                 </span>
               </mat-list-item>
-              <mat-list-item class="list-item type-list-item" style="width: 100%">
-                <span class="title-size" [ngClass]="titleModifiers">Type: </span>
-                <span *ngIf="!editing" class="title-size" [ngClass]="titleModifiers">
+              <mat-list-item
+                class="list-item type-list-item"
+                style="width: 100%"
+              >
+                <span class="title-size" [ngClass]="titleModifiers"
+                  >Type:
+                </span>
+                <span
+                  *ngIf="!editing"
+                  class="title-size"
+                  [ngClass]="titleModifiers"
+                >
                   {{ item.type }}
                 </span>
 
-                <mat-form-field *ngIf="editing" appearance="fill" style="width:100%;">
+                <mat-form-field
+                  *ngIf="editing"
+                  appearance="fill"
+                  style="width: 100%"
+                >
                   <mat-label>Type</mat-label>
-                  <mat-select  [(value)]="item.type">
+                  <mat-select [(value)]="item.type">
                     <mat-option *ngFor="let t of types" [value]="t">
-                      {{t}}
+                      {{ t }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
-
               </mat-list-item>
 
-
-              <mat-list-item class="list-item n2-line gametype-list-item">
-                <p matLine *ngIf="!editing" >
-                  <span class="title-size" [ngClass]="titleModifiers"> 
-                    Mechanics: <span *ngIf="item.mechanics && item.mechanics.length > 0" >{{ (item.mechanics.length > 0)?item.mechanics[0]: "" }}</span>
+              <mat-list-item class="list-item n2-line mechanics-list-item">
+                <p matLine *ngIf="!editing">
+                  <span class="title-size" [ngClass]="titleModifiers">
+                    Mechanics:
+                    <span *ngIf="item.mechanics && item.mechanics.length > 0">{{
+                      item.mechanics.length > 0 ? item.mechanics[0] : ""
+                    }}</span>
                   </span>
                 </p>
-                <p matLine  *ngIf="!editing">
-                  <span class="second-title-size" [ngClass]="titleModifiers">{{ (item.mechanics && item.mechanics.length > 1)?item.mechanics!.slice(1).join(", "): "" }}</span>
-                <p>
-                <div *ngIf="editing" style="width:100%">
+                <p matLine *ngIf="!editing">
+                  <span class="second-title-size" [ngClass]="titleModifiers">{{
+                    item.mechanics && item.mechanics.length > 1
+                      ? item.mechanics!.slice(1).join(", ")
+                      : ""
+                  }}</span>
+                </p>
+
+                <p></p>
+                <div *ngIf="editing" style="width: 100%">
                   <ng-container
                     *ngTemplateOutlet="
                       autocomplete;
-                      context: { list: mechanics, selectedItems: item.mechanics }
+                      context: {
+                        list: mechanics,
+                        selectedItems: item.mechanics
+                      }
                     "
                   ></ng-container>
                 </div>
