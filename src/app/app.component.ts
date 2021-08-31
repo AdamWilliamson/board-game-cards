@@ -84,12 +84,14 @@ export class AppComponent {
       this.themes = JSON.parse(themesJson).sort();
     } else {
       this.themes = [
+        'Dinosaurs',
+        'Theme Park',
         'Wild West',
         'Gangster',
         'Super Heroes',
         'Martial Arts',
         'Pirates',
-        'Racing',
+        'Trading',
         'Fantasy',
         'Trains',
         'Sports',
@@ -131,6 +133,7 @@ export class AppComponent {
         'Traitor',
         'Pickup and Deliver',
         'Trading',
+        'Role Playing',
       ].sort();
     }
     this.loading = false;
@@ -176,9 +179,9 @@ export class AppComponent {
     }
 
     if (item.name.hasOwnProperty('0')) {
-      return (<any>item.name)[0].attr.value;
+      return unescape((<any>item.name)[0].attr.value).replace('&#039;', "'");
     } else {
-      return (<any>item.name).attr.value;
+      return unescape((<any>item.name).attr.value).replace('&#039;', "'");
     }
   }
 
